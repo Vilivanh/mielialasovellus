@@ -13,3 +13,7 @@ Sovelluksen ominaisuuksia:
 - Käyttäjä voi antaa arvion siitä, kohottiko vai laskiko toiminta mielialaa
 - Ylläpitäjä voi lisätä kaikille saatavilla olevia aktiviteetteja
 - Ylläpitäjä voi nähdä globaalien toimintojen vaikutuksista mielialaan
+
+Sovelluskehityksen tilanne
+
+Tietokantataulut on luotu, jotta sovelluksen perusrakenne olisi helpompi hahmottaa. Seuraava kehityskohde on html-sivujen luominen, tällä hetkellä varsinaisia sivuja ei ole tehty, joten testaaminen tältä osin onhaasteellista.
