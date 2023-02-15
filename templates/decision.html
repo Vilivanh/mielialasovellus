@@ -1,6 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+
 <form action="/result" method="POST">
 Aktiviteetin valinta:
 <p>
 <input type="radio" name="decision" value="1"> Vapaa valinta listasta
 <input type="radio" name="decision" value="2"> Arvottu aktiviteetti
 <p>
+
+{% endblock %}
+

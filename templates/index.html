@@ -1,3 +1,8 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Etusivu</h2>
+
 {% if session.username %}
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
 <a href="/logout">Kirjaudu ulos</a>
@@ -19,3 +24,5 @@ Arvo aktiviteetti:
 
 
 </ul>
+
+{% endblock %}
