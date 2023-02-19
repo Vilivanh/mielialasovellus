@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, session
 import users
 from users import register, login
 from sqlalchemy.sql import text
-
+from choose import showall, random, decide
 
 
 @app.route("/")
@@ -65,40 +65,40 @@ def decision():
     if request.method == "POST":
         return render_template("choose.html")
 
-#@app.route("/choose", methods=["GET", "POST"])
-#def choose():
-    #if request.method == "GET":
-        #return render_template("choose.html")
-    #if request.method == "POST":
-       # categories = request.form.getlist("kategoria")
-       # prices = request.form.getlist("kustannus")
-        #valinta = request.form["valinta"]
-        #if valinta == "decide":
-            #free = False
-            #lowcost = False
-            #highcost = False
-            #for price in prices:
-                #if price == 1:
-                  #  free = True
-                #if price == 2:
-               #     lowcost = True
-                #if price == 3:
-                 #   highcost = True
-            #chosen == decide(categories, free, lowcost, highcost)  
-            #return render_template(chosen, "activity.html")
-        #if valinta =="random":
-          #  free = False
-           # lowcost = False
-           # highcost = False
-            #for price in prices:
-             #   if price == 1:
-              #      free = True
-               # if price == 2:
-                #    lowcost = True
-                #if price == 3:
-                 #   highcost = True
-            #chosen == random(categories, free, lowcost, highcost)
-           # return render_template(chosen, "activity.html")
+@app.route("/choose", methods=["GET", "POST"])
+def choose():
+    if request.method == "GET":
+        return render_template("choose.html")
+    if request.method == "POST":
+        categories = request.form.getlist("kategoria")
+        prices = request.form.getlist("kustannus")
+        valinta = request.form["valinta"]
+        if valinta == "decide":
+            free = False
+            lowcost = False
+            highcost = False
+            for price in prices:
+                if price == 1:
+                    free = True
+                if price == 2:
+                    lowcost = True
+                if price == 3:
+                    highcost = True
+            chosen == decide(categories, free, lowcost, highcost)  
+            return render_template(chosen, "activity.html")
+        if valinta =="random":
+            free = False
+            lowcost = False
+            highcost = False
+            for price in prices:
+                if price == 1:
+                    free = True
+                if price == 2:
+                    lowcost = True
+                if price == 3:
+                    highcost = True
+            chosen == random(categories, free, lowcost, highcost)
+            return render_template(chosen, "activity.html")
 
 
 #@app.route("/review/<text:name>", methods=["POST"])
