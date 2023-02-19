@@ -16,4 +16,16 @@ Sovelluksen ominaisuuksia:
 
 Sovelluskehityksen tilanne
 
-Tietokantataulut on luotu, jotta sovelluksen perusrakenne olisi helpompi hahmottaa. Seuraava kehityskohde on html-sivujen luominen, tällä hetkellä varsinaisia sivuja ei ole tehty, joten testaaminen tältä osin onhaasteellista.
+Tietokantataulut
+- Luotu, poislukien oman mielialan taulu (mahdollista, että jää pois kokonaan)
+- Ongelmakohta: paikallisessa tuotannossa en ole päässyt testaamaan kirjautumista - herjaa että users-taulukkoa ei ole
+
+HTML-sivut
+- Kirjautuminen, rekisteröityminen käytännössä valmiita. 
+- Muita ei ole testattu, johtuen tietokantatauluissa mainitusta ongelmakohdasta, mutta sivut pääsääntöisesti luotu
+
+Funktiot
+- Uuden aktiviteetin lisääminen, käyttäjän luominen ja kirjautuminen valmiita
+- Aktiviteettien valinta hyvällä mallilla
+- Arvostelujen tekeminen aloitettu
+- Reitityksessä parannettavaa
