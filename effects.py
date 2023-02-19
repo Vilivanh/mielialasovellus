@@ -1,3 +1,6 @@
+from sqlalchemy.sql import text
+from db import db
+
 def add_review(name, low, neutral, high):
     sql = text("INSERT INTO effects (name, low, neutral, high) VALUES (:name, :low, :neutral, :high)")
     db.session.execute(sql)

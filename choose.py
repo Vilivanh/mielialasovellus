@@ -1,5 +1,6 @@
 from db import db
 from random import randint
+from sqlalchemy.sql import text
 
 def showall():
     sql1 = "SELECT * FROM actions"

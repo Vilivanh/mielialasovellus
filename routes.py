@@ -2,7 +2,7 @@ from app import app
 from flask import render_template, request, redirect, session
 import users
 from users import register, login
-
+from sqlalchemy.sql import text
 
 
 
@@ -65,53 +65,53 @@ def decision():
     if request.method == "POST":
         return render_template("choose.html")
 
-@app.route("/choose", methods=["GET", "POST")
-def choose():
-    if request.method == "GET":
-        return render_template("choose.html")
-    if request.method == "POST":
-        categories = request.form.getlist("kategoria")
-        prices = request.form.getlist("kustannus")
-        valinta = request.form["valinta"]
-        if valinta == "decide":
-            free = False
-            lowcost = False
-            highcost = False
-            for price in prices:
-                if price == 1:
-                    free = True
-                if price == 2:
-                    lowcost = True
-                if price == 3:
-                    highcost = True
-            chosen == decide(categories, free, lowcost, highcost)  
-            return render_template(chosen, "activity.html")
-        if valinta =="random":
-            free = False
-            lowcost = False
-            highcost = False
-            for price in prices:
-                if price == 1:
-                    free = True
-                if price == 2:
-                    lowcost = True
-                if price == 3:
-                    highcost = True
-            chosen == random(categories, free, lowcost, highcost)
-            return render_template(chosen, "activity.html")
+#@app.route("/choose", methods=["GET", "POST"])
+#def choose():
+    #if request.method == "GET":
+        #return render_template("choose.html")
+    #if request.method == "POST":
+       # categories = request.form.getlist("kategoria")
+       # prices = request.form.getlist("kustannus")
+        #valinta = request.form["valinta"]
+        #if valinta == "decide":
+            #free = False
+            #lowcost = False
+            #highcost = False
+            #for price in prices:
+                #if price == 1:
+                  #  free = True
+                #if price == 2:
+               #     lowcost = True
+                #if price == 3:
+                 #   highcost = True
+            #chosen == decide(categories, free, lowcost, highcost)  
+            #return render_template(chosen, "activity.html")
+        #if valinta =="random":
+          #  free = False
+           # lowcost = False
+           # highcost = False
+            #for price in prices:
+             #   if price == 1:
+              #      free = True
+               # if price == 2:
+                #    lowcost = True
+                #if price == 3:
+                 #   highcost = True
+            #chosen == random(categories, free, lowcost, highcost)
+           # return render_template(chosen, "activity.html")
 
 
-@app.route("/review/<text:name>", methods=["POST"])
-def review(name):
-    activity_name = name
-    review = request.form["effect"]
-    if review == 1:
-        effects.add_review(activity_name, True, False, False)
-    elif review == 2:
-        effects.add_review(activity_name, False, True, False)
-    else:
-        effects.add_review(activity_name, False, False, True)
-    return render_template("effects.html")
+#@app.route("/review/<text:name>", methods=["POST"])
+#def review(name):
+    #activity_name = name
+   # review = request.form["effect"]
+    #if review == 1:
+     #   effects.add_review(activity_name, True, False, False)
+    #elif review == 2:
+     #   effects.add_review(activity_name, False, True, False)
+    #else:
+     #   effects.add_review(activity_name, False, False, True)
+    #return render_template("effects.html")
 
     
     
