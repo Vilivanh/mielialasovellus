@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<form action="/effect" method="POST">
+Anna arviosi aktiviteetista {{ name }}
+<input type="radio" name="effect" value="1">Laskeva - laski mielialaa
+<input type="radio" name="effect" value="2">Neutraali - piti mielialan ennallaan
+<input type="radio" name="effect" value="3">Kohottava - nosti mielialaa
+<input type"submit" value="Lähetä"<input type"submit" value="Lähetä">
+</form>
+
+

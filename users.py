@@ -12,37 +12,41 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///vanhav"
 app.secret_key = getenv("SECRET_KEY")
 
 def login(username, password):
-    sql = "SELECT password, id FROM users WHERE username=:username"
+    sql = "SELECT password, id FROM users WERE username=:username"
     sql2 = text(sql)
+    print(sql)
+    print(sql2)
     result = db.session.execute(sql2, {"username":username})
     user = result.fetchone()
     if not user:
         return False
-    if not check_password_hash(user[0], password):
+    if check_password_hash(user[0], password):
+        session["userid"] = user[1]
+        session["username"] = username
+        session["csrf_token"] = os.urandom(16).hex()
+        return True
+    else:
         return False
-    session["user_id"] = user[1]
-    session["user_name"] = username
-    session["csrf_token"] = os.urandom(16).hex()
-    return True
 
 def user_id():
-    return session.get("user_id", 0)
+    return session.get("userid", 0)
 
 def logout():
-    del session["user_id"]
-    del session["user_name"]
+    del session["userid"]
+    del session["username"]
 
-def register(name, password):
+def register(username, password):
     hash_value = generate_password_hash(password)
+
     try:
-        sql = """INSERT INTO users (name, password)
-                 VALUES (:name, :password)"""
+        sql = """INSERT INTO users (username, password)
+                 VALUES (:username, :password)"""
         sql2 = text(sql)
-        db.session.execute(sql2, {"name":name, "password":hash_value})
+        db.session.execute(sql2, {"username":username, "password":hash_value})
         db.session.commit()
     except:
         return False
-    return login(name, password)
+    return login(username, password)
 
 
 def check_csrf():
