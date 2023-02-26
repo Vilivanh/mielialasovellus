@@ -1,9 +1,9 @@
-{% extends "layout"html" %}
+{% extends "layout.html" %}
 {% block content %}
-Aktiviteetti: {{ name }}
-Aktiviteetti kuuluu kategoriaan {{category }}
-
-<p><a href="/review/{{ name }}">Anna arviosi aktiviteetin vaikutuksista</a></p>
+Aktiviteetti: {{ nimi }}
+<br>Aktiviteetti kuuluu kategoriaan {{ kategoria }}
+<br>Aktiviteetin kustannus: {{ kustannus }}
+<p><a href="/review/{{ nimi }}">Anna arviosi aktiviteetin vaikutuksista</a></p>
 
 {% endblock %}
 

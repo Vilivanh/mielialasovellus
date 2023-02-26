@@ -21,7 +21,7 @@ def login():
         session["username"]=username
         if not users.login(username, password):
             return render_template("error.html", message="virheellinen kirjautumisyritys")
-        return redirect("/")
+        return redirect("/index.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -42,16 +42,30 @@ def register():
            # return render_template("error.html", message = "rekisteröinti epäonnistu")
         return redirect("/")
 
-@app.route("/new")
+@app.route("/new", methods =["GET","POST"])
 def new():
-    return render_template("new.html")
+    if request.method == "GET":
+        return render_template("new.html")
+    if request.method == "POST":
+        nimi = request.form["nimi"]
+        kategoria = request.form["kategoria"]
+        hinta = request.form["kustannus"]
+        return redirect("/create.html")
+        
 
-@app.route("/create", methods=["POST"])
+@app.route("/create", methods=["GET","POST"])
 def create():
-    nimi = request.form["nimi"]
-    kategoria = request.form["kategoria"]
-    hinta = request.form["hinta"]
-    return render_template("create.html", nimi=nimi, kategoria=kategoria, hinta=hinta)
+    if request.method == "GET":
+        return render_template("create.html")
+    if request.method == "POST":
+        nimi = request.form["nimi"]
+        kategoria = request.form["kategoria"]
+        kustannus = request.form["kustannus"]
+        return render_template("/activity.html", nimi=nimi, kategoria=kategoria, kustannus=kustannus)
+
+@app.route("/activity")
+def activity(nimi, kategoria, kustannus):
+    return render_template("activity.html", nimi = nimi, kategoria=kategoria, kustannus=kustannus)
 
 @app.route("/logout")
 def logout():
@@ -101,17 +115,18 @@ def choose():
             return render_template(chosen, "activity.html")
 
 
-#@app.route("/review/<text:name>", methods=["POST"])
-#def review(name):
-    #activity_name = name
-   # review = request.form["effect"]
-    #if review == 1:
-     #   effects.add_review(activity_name, True, False, False)
-    #elif review == 2:
-     #   effects.add_review(activity_name, False, True, False)
-    #else:
-     #   effects.add_review(activity_name, False, False, True)
-    #return render_template("effects.html")
+@app.route("/review", methods=["GET"])
+def review(name=None):
+
+    activity_name = name
+    review = request.form["effect"]
+    if review == 1:
+        effects.add_review(activity_name, True, False, False)
+    elif review == 2:
+        effects.add_review(activity_name, False, True, False)
+    else:
+        effects.add_review(activity_name, False, False, True)
+    return render_template("effects.html")
 
     
     

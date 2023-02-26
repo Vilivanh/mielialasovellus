@@ -1,8 +1,12 @@
-Lisäsit aktiiviteetin nimeltä {{ aktiviteetti }}
-<p>
-Kategoria:
+{% extends "layout"html" %}
+{% block content %}
+
+Lisäsit aktiviteetin nimeltä {{ nimi }}
+<br>Kategoria:
 <ul>
 {{ kategoria }}
 </ul>
-Hinta: <br>
-{{ hinta }}
+<br>Hinta:{{ hinta }}
+<br>
+
+{% endblock %}
