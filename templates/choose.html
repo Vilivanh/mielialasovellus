@@ -1,7 +1,12 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<form action="/result" method="POST">
+
+
+
+<form action="/choose" method="POST">
+	<input type="submit" name="valinta" value="showall"> Näytä kaikki
+
 	Valitse hinta
 	<p>
 	<input type="checkbox" name="kustannus" value="1"> Ilmainen
@@ -19,10 +24,11 @@
 	<p>
 	<input type="radio" name="valinta" value="decide">Valitsen itse
 	<input type="radio" name="valinta" value="random">Arvo
+	<p>
 
-
+<a href="/activity_list">
 <input type="submit" name="vahvistus" value="confirm">Vahvista valinta
-
+</a>
 </form>
 
 {% endblock %}

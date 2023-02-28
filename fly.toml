@@ -1,4 +1,4 @@
-# fly.toml file generated for mielialasovellus on 2023-02-27T13:25:25+02:00
+# fly.toml file generated for mielialasovellus on 2023-02-27T16:29:46+02:00
 
 app = "mielialasovellus"
 kill_signal = "SIGINT"

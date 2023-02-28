@@ -25,7 +25,7 @@ CREATE TABLE private_actions (
 	category TEXT,
 	free BOOLEAN,
 	lowcost BOOLEAN,
-	highcost BOOLEAN, 
+	highcost BOOLEAN 
 );
 
 CREATE TABLE supervisors (
@@ -34,4 +34,9 @@ CREATE TABLE supervisors (
 	password TEXT
 );
 	
-
+CREATE TABLE moods (
+	id SERIAL PRIMARY KEY,
+	mood INT,
+	user_id INT REFERENCES users,
+	sent_at TIMESTAMP
+);

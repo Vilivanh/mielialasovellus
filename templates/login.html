@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-
+{% if not session["username"] %}
 <h2>Kirjaudu sisään</h2>
 
 <form action="/login" method="post">
@@ -14,6 +14,6 @@ Jos sinulla ei ole tunnusta, voit luoda uuden tunnuksen <a href="/register">täs
 
 <p>
 <a href="/">Palaa takaisin</a>
-
+{% endif %}
 {% endblock %}
 

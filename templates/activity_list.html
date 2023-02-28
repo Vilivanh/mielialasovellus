@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Aktiviteetit</h2>
+    <hr>
+    {% for activity in activities_list %}
+    	<p> {{ activity }}	</p>
+    {% endfor %}     
+    <a href="/new">
+	    <input type="submit" value="Luo uusi aktiviteetti">
+    </a>
+
+{% endblock %}

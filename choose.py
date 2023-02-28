@@ -11,32 +11,36 @@ def showall():
     return listing
 
 
-def decide(category, free, lowcost, highcost):
-    if free == True:
-        if lowcost == False:
-            if highcost == False:
-                sql1 = "SELECT name, category FROM actions WHERE category=:category AND free = t AND lowcost = f AND highcost = f"
-            else:
-                sql1 = "SELECT name, category FROM actions WHERE category=:category AND free = t AND lowcost = f AND highcost = t"
-        else:
-            if highcost == False:
-                sql1 = "SELECT name, category FROM actions WHERE category=:category AND free = t AND lowcost = t AND highcost = f"
-            else:
-                sql1 = "SELECT name, category FROM actions WHERE category=:category AND free = t AND lowcost = t AND highcost = t"
-    else:
-        if lowcost == False:
-            if highcost == True:
-                sql1 = "SELECT name, category FROM actions WHERE category=:category AND free = f AND lowcost = f AND highcost = t"
-        else:
-            if highcost == True:
-                sql1 = "SELECT name, category FROM actions WHERE category=:category AND free = f AND lowcost = t AND highcost = t"
-            else:
-                sql1 = "SELECT name, category FROM actions WHERE category=:category AND free = f AND lowcost = f AND highcost = t"
+def decide_self(categories, free, lowcost, highcost):
+    listing = []
+    for category in categories:
+        if category == "1":
+            category_name = "Nautinto"
+        elif category == "2":
+            category_name = "Viihde"
+        elif category == "3": 
+            category_name = "Liikunta"
+        elif category == "4":
+            category_name = "Muu"
+        sql1 = "SELECT name, category FROM actions WHERE category=:category AND (free = TRUE OR lowcost = TRUE OR highcost = TRUE)"  
+        sql2 = text(sql1)
+        #sql3 = "SELECT name, category FROM private_actions WHERE category=:category AND (free = t OR lowcost = t OR highcost = t)"
+        #sql4 = text(sql3)
+        result = db.session.execute(sql2, {"name": name, "category": category_name, "free": free, "lowcost": lowcost, "highcost": highcost}).fetchall()
+        for row in result:
+            listing.append(row)
+        
+    return listing
 
-    return db.session.execute(sql1).fetchall()
-
-def random(category, free, lowcost, highcost):
-    listing = decide(category, free, lowcost, highcost)
+def random(categories, free, lowcost, highcost):
+    listing = []
+    for category in categories:
+        sql1 = "SELECT name, category FROM actions WHERE category=:category AND (free = TRUE OR lowcost = TRUE OR highcost = TRUE)"
+        sql2 = text(sql1)
+        sql3 = "SELECT name, category FROM private_actions WHERE category=:category AND (free = TRUE OR lowcost = TRUE OR highcost = TRUE)"
+        sql4 = text(sql3)
+        listing.append(db.session.execute(sql2).fetchall())
+        listing.append(db.session.execute(sql4).fetchall())
     listlen = len(listing)
     random_number = randint(0, listlen)
     return listing[random_number]

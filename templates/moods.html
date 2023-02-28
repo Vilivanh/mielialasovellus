@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<form action="/moods" method="POST">
+	Anna arviosi tämänhetkisestä mielialastasi:
+	<p>
+	<input type="radio" name="mood" value="1"> 1
+	<input type="radio" name="mood" value="2"> 2
+	<input type="radio" name="mood" value="3"> 3
+	<input type="radio" name="mood" value="4"> 4
+	<input type="radio" name="mood" value="5"> 5
+	<input type="radio" name="mood" value="6"> 6
+	<input type="radio" name="mood" value="7"> 7
+	<input type="radio" name="mood" value="8"> 8
+	<input type="radio" name="mood" value="9"> 9
+	<input type="radio" name="mood" value="10"> 10
+	<p>
+	<input type="submit" value="Lähetä">
+	{% endblock %}

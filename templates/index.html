@@ -25,18 +25,20 @@ Arvo aktiviteetti <a href="/random">painamalla tästä</a>
 </ul>
 Luo uusi aktiviteetti <a href="/new">painamalla tästä</a>
 
-{%else %}
+<ul>
+	Anna arvio tämänhetkisestä mielialastasi <a href="/moods">painamalla tästä</a>
+
+</ul>
+
+{% endif %}
+
+{% if not session["username"] %}
 
 Tervetuloa mielialasovellukseen. 
-
-<form action="/login" method=POST">
-	<p>Käyttäjätunnus:<br>
-	<input type="text" name="username"></p>
-	<p>Salasana:<br>
-	<input type="password" name="password"></p>
-	<input type="submit" value="Kirjaudu">
-</form>
-
+<p>
+Jos sinulla on tunnus, kirjaudu sisään <a href="/login">tästä</a>
+<p>
 Jos sinulla ei ole tunnusta, voit luoda uuden tunnuksen <a href="/register">tästä</a>
 {% endif %}
+
 {% endblock %}
