@@ -4,29 +4,29 @@
 
 
 
-<form action="/choose" method="POST">
-	<input type="submit" name="valinta" value="showall"> Näytä kaikki
-
+<form action="/activity_list" method="POST">
+	</a>
 	Valitse hinta
 	<p>
-	<input type="checkbox" name="kustannus" value="1"> Ilmainen
-	<input type="checkbox" name="kustannus" value="2"> Edullinen
-	<input type="checkbox" name="kustannus" value="3"> Kallis
+	<input type="checkbox" name="price" value="Ilmainen"> Ilmainen
+	<input type="checkbox" name="price" value="Edullinen"> Edullinen
+	<input type="checkbox" name="price" value="Kallis"> Kallis
 	<p>
 	Valitse kategoria
 	<p>
-	<input type="checkbox" name="kategoria" value="1"> Nautinto
-        <input type="checkbox" name="kategoria" value="2"> Viihde
-        <input type="checkbox" name="kategoria" value="3"> Liikunta
-	<input type="checkbox" name="kategoria" value="4"> Muu
+	<input type="checkbox" name="category" value="Nautinto"> Nautinto
+        <input type="checkbox" name="category" value="Viihde"> Viihde
+        <input type="checkbox" name="category" value="Liikunta"> Liikunta
+	<input type="checkbox" name="category" value="Muu"> Muu
 	<p>
 	Valitsetko itse vai arvotko?
 	<p>
 	<input type="radio" name="valinta" value="decide">Valitsen itse
 	<input type="radio" name="valinta" value="random">Arvo
 	<p>
+	<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
-<a href="/activity_list">
+
 <input type="submit" name="vahvistus" value="confirm">Vahvista valinta
 </a>
 </form>

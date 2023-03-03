@@ -2,12 +2,17 @@
 {% block content %}
 
 
-<form action="/effect" method="POST">
+<form action="/effects/{{ name }}" method="POST">
 Anna arviosi aktiviteetista {{ name }}
-<input type="radio" name="effect" value="1">Laskeva - laski mielialaa
-<input type="radio" name="effect" value="2">Neutraali - piti mielialan ennallaan
-<input type="radio" name="effect" value="3">Kohottava - nosti mielialaa
+<input type="radio" name="effects" value="1">Laskeva - laski mielialaa
+<br>
+<input type="radio" name="effects" value="2">Neutraali - piti mielialan ennallaan
+</br>
+<br><input type="radio" name="effects" value="3">Kohottava - nosti mielialaa
+</br>
 <input type="submit" value="Lähetä">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
 </form>
 
 {% endblock %}

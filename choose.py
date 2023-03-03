@@ -32,16 +32,34 @@ def decide_self(categories, free, lowcost, highcost):
         
     return listing
 
-def random(categories, free, lowcost, highcost):
+def random_action(categories, free, lowcost, highcost):
     listing = []
-    for category in categories:
-        sql1 = "SELECT name, category FROM actions WHERE category=:category AND (free = TRUE OR lowcost = TRUE OR highcost = TRUE)"
-        sql2 = text(sql1)
-        sql3 = "SELECT name, category FROM private_actions WHERE category=:category AND (free = TRUE OR lowcost = TRUE OR highcost = TRUE)"
-        sql4 = text(sql3)
-        listing.append(db.session.execute(sql2).fetchall())
-        listing.append(db.session.execute(sql4).fetchall())
+    if free == True:
+        for category in categories:
+            sql1 = "SELECT name, category FROM actions WHERE category=:category AND free = TRUE"
+            sql2 = text(sql1)
+            results = db.session.execute(sql2, {"category": category}).fetchall()
+            for result in results:
+                listing.append((result[0], result[1], "Ilmainen"))
+    if lowcost == True:
+        for category in categories:
+            sql1 = "SELECT name, category FROM actions WHERE category=:category AND lowcost = TRUE"
+            sql2 = text(sql1)
+            results = db.session.execute(sql2, {"category": category}).fetchall()
+            for result in results:
+                listing.append((result[0], result[1], "Edullinen"))
+    if highcost == True:
+        for category in categories:
+            sql1 = "SELECT name, category FROM actions WHERE category=:category AND highcost = TRUE"
+            sql2 = text(sql1)
+            results = db.session.execute(sql2, {"category": category}).fetchall()
+            for result in results:
+                listing.append((result[0], result[1], "Kallis"))
+        
     listlen = len(listing)
-    random_number = randint(0, listlen)
+    if listlen > 1:
+        random_number = randint(0, listlen-1)
+    else:
+        random_number = 0
     return listing[random_number]
 

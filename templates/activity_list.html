@@ -1,12 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h2>Aktiviteetit</h2>
-    <hr>
-    {% for activity in activities_list %}
-    	<p> {{ activity }}	</p>
-    {% endfor %}     
-    <a href="/new">
-	    <input type="submit" value="Luo uusi aktiviteetti">
-    </a>
 
+Klikkaa aktiviteetin nimeä valitaksesi se
+<form action="showall" method="GET">
+	{% for result in results %}
+		<h4>Aktiviteetti:<a href="/activity/{{ result[0] }}">{{result[0]}}</a></h4>
+		<ul>
+		<li>Kategoria: {{result[1]}}
+		<li>Kustannus: {{result[2]}}
+		</ul>
+	{% endfor %}
+
+<a href="/new">
+<input type="submit" value="Luo uusi aktiviteetti">
+</a>
+
+</form>
 {% endblock %}
+~                

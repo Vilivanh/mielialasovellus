@@ -3,10 +3,14 @@ from flask import render_template, request, redirect, session
 import users
 from db import db
 from users import register, login
+from effects import show_reviews, filter_reviews
 from sqlalchemy.sql import text
-from choose import showall, random, decide_self
-import moods
+from choose import showall, random_action, decide_self
+from moods import add_mood, show_moods
 from werkzeug.security import check_password_hash, generate_password_hash
+from random import randint
+from datetime import datetime
+import secrets  
 
 @app.route("/")
 def index():
@@ -19,17 +23,18 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        session["csrf_token"] = secrets.token_hex(16)
         sql = "SELECT * FROM users WHERE username = :username"
         sql2 = text(sql)
         user = db.session.execute(sql2, {"username": username}).fetchone()
-        if user:
-            pw = user["password"]
+        #if user:
+            #pw = user[2]
         #if not user:
             #return render_template("error.html", message="virheellinen kirjautumisyritys")
         session["username"] = username
         sql = "SELECT id FROM users WHERE username = :username"
         sql2 = text(sql)
-        user_id = db.session.execute(sql2, {"username": username}).fetchone()
+        user_id = db.session.execute(sql2, {"username": username}).fetchone()[0]
         session["user_id"] = user_id
         return redirect("/")
 
@@ -67,22 +72,24 @@ def new():
     if request.method == "GET":
         return render_template("new.html")
     if request.method == "POST":
-        nimi = request.form["nimi"]
-        kategoria = request.form["kategoria"]
-        hinta = request.form["kustannus"]
+        name = request.form["name"]
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+        category = request.form["category"]
+        price = request.form["price"]
         free, lowcost, highcost = False
-        if hinta == "Ilmainen":
+        if price == "Ilmainen":
             free = True
-        if hinta == "Edullinen":
+        if price == "Edullinen":
             lowcost = True
-        if hinta == "Kallis":
+        if price == "Kallis":
             highcost = True
 
         sql = "INSERT INTO actions (name, category, free, lowcost, highcost) VALUES (:name, :category, :free, :lowcost, :highcost)"
         sql2 = text(sql)
         db.session.execute(sql2, {"name": name, "category": category, "free": free, "lowcost": lowcost, "highcost": highcost})
         db.session.commit()
-        return render_template("acitivity_list.html")
+        return render_template("activity.html", name=name, category=category, price=price)
         
 
 @app.route("/create", methods=["GET","POST"])
@@ -93,11 +100,34 @@ def create():
         nimi = request.form["nimi"]
         kategoria = request.form["kategoria"]
         kustannus = request.form["kustannus"]
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         return render_template("/activity.html", nimi=nimi, kategoria=kategoria, kustannus=kustannus)
 
-@app.route("/activity")
-def activity(nimi, kategoria, kustannus):
-    return render_template("activity.html", nimi = nimi, kategoria=kategoria, kustannus=kustannus)
+@app.route("/activity", methods=["GET","POST"])
+def activity():
+    if request.method == "GET":
+        return render_template("activity.html")
+    if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+        name = request.form["name"]
+        category=request.form["category"]
+        price=request.form["price"]
+        free = False
+        lowcost = False
+        highcost = False
+        if price == "Ilmainen":
+            free = True
+        if price == "Edullinen":
+            lowcost = True
+        if price == "Kallis":
+            highcost = True
+        sql = "INSERT INTO actions (name, category, free, lowcost, highcost) VALUES (:name, :category, :free, :lowcost, :highcost)"
+        sql2 = text(sql)
+        db.session.execute(sql2, {"name": name, "category": category, "free": free, "lowcost": lowcost, "highcost": highcost})
+        db.session.commit()
+        return render_template("activity.html", name = name, category = category, price=price)
 
 @app.route("/logout")
 def logout():
@@ -116,28 +146,43 @@ def decision():
 def choose():
     if request.method == "GET":
         return render_template("choose.html")
-    if request.method == "POST":
-        categories = request.form["kategoria"]
-        prices = request.form["kustannus"]
-
-        
+    if request.method == "POST":        
         valinta = request.form["valinta"]
         if valinta == "showall":
-            return render_template("showall.html")
+            sql = "SELECT name, category FROM activities"
+            sql2 = text(sql)
+            results = db.session.execute(sql2).fetchall()
+            return render_template("showall.html", results=results)
         if valinta == "decide":
-            free = False
-            lowcost = False
-            highcost = False
-            for price in prices:
-                if price == 1:
-                    free = True
-                if price == 2:
-                    lowcost = True
-                if price == 3:
-                    highcost = True
+            prices = request.form.getlist("price")
+            categories = request.form.getlist("categories")
+            newlist = []
+            if "Ilmainen" in prices:
+                
+                for category in categories:
+                    sql = "SELECT name, category FROM actions WHERE category=:category AND free=TRUE"
+                    sql2 = text(sql)
+                    results = db.session.execute(sql2, {"category": category})
+                    for result in results:
+                        newlist.append(result[0], result[1], "Ilmainen")
+            if "Edullinen" in prices:
+                for category in categories:
+                    sql = "SELECT name, category FROM actions WHERE category=:category AND lowcost=TRUE"
+                    sql2 = text(sql)
+                    results = db.session.execute(sql2, {"category": category})
+                    for result in results:
+                        newlist.append(result[0], result[1], "Edullinen")
+            if "Kallis" in prices:
+                for category in categories:
+                    sql = "SELECT name, category FROM actions WHERE category=:category AND highcost=TRUE"
+                    sql2 = text(sql)
+                    results = db.session.execute(sql2, {"category":category})
+                    for result in results:
+                        newlist.append(result[0], result[1], "Kallis")
+            return render_template("activity_list.html",results=newlist)
             
-            activities_list = decide_self(categories, free, lowcost, highcost)  
-            return render_template("activity_list.html", activities_list = activities_list)
+            
+        #return render_template("activity_list.html", prices = prices, categories = categories)
         if valinta =="random":
             free = False
             lowcost = False
@@ -153,36 +198,200 @@ def choose():
             return render_template("activity.html")
 
 
-@app.route("/review", methods=["GET"])
-def review(name=None):
-
-    activity_name = name
-    review = request.form["effect"]
-    if review == 1:
-        effects.add_review(activity_name, True, False, False)
-    elif review == 2:
-        effects.add_review(activity_name, False, True, False)
-    else:
-        effects.add_review(activity_name, False, False, True)
-    return render_template("effects.html")
+@app.route("/review/<name>", methods=["GET"])
+def review(name):
+    if request.method == "GET":
+        return render_template("review.html", name=name)
+    #activity_name = name
+    #review = request.form["effects"]
+    #if review == 1:
+        #effects.add_review(activity_name, True, False, False)
+    #elif review == 2:
+        #effects.add_review(activity_name, False, True, False)
+    #else:
+        #effects.add_review(activity_name, False, False, True)
+    #return render_template("effects.html")
 
 @app.route("/moods", methods=["GET","POST"])
 def mood():
     if request.method == "GET":
         return render_template("moods.html")
     if request.method == "POST":
-        user_id = users.user_id()
-        mood = request.form["mood"]
-        intmood = int(mood)
-        moods.add_mood(mood, user_id)
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+        user_id = session["user_id"]
+        feeling = request.form["mood"]
+        sent_at2 = datetime.now()
+        sent_at = sent_at2.replace(microsecond=0)
+        sql = "INSERT INTO moods (feeling, user_id, sent_at) VALUES (:feeling, :user_id, :sent_at)"
+        sql2 = text(sql)
+        db.session.execute(sql2, {"feeling": feeling, "user_id": user_id, "sent_at": sent_at})
+        db.session.commit()
         return redirect("/")
+
+@app.route("/moodlists")
+def show_moods():
+    user_id = session["user_id"]
+    sql = "SELECT feeling, sent_at FROM moods WHERE user_id=:user_id"
+    sql2 = text(sql)
+    results = db.session.execute(sql2, {"user_id": user_id}).fetchall()
+    print(results)
+    return render_template("moodlists.html", results = results)
 
 @app.route("/showall")
 def showall():
-    sql = "SELECT * FROM actions"
-    sql2 = "SELECT * FROM private_actions"
-    return redirect("/")
+    sql = "SELECT name, category, free, lowcost, highcost FROM actions"
+    sql2 = text(sql)
+    results = db.session.execute(sql2).fetchall()
+    newlist = []
+    for result in results:
+        if result[2] == True:
+            cost = "Ilmainen"
+        if result[3] == True:
+            cost = "Edullinen"
+        if result[4] == True:
+            cost = "Kallis"
+        newlist.append((result[0], result[1], cost))
+    return render_template("showall.html",results=newlist)
 
-@app.route("/activity_list")
+@app.route("/activity_list", methods=["POST"])
 def activity_list():
-    return render_template("activity_list.html")
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+    valinta = request.form["valinta"]
+    prices = request.form.getlist("price")
+    print(prices)
+    categories = request.form.getlist("category")
+    print(categories)
+    newlist = []
+    if "Ilmainen" in prices:
+        for category in categories:
+            sql = "SELECT name, category FROM actions WHERE category=:category AND free=TRUE"
+            sql2 = text(sql)
+            results = db.session.execute(sql2, {"category": category})
+            for result in results:
+                newlist.append((result[0], result[1], "Ilmainen"))
+    if "Edullinen" in prices:
+        for category in categories:
+            sql = "SELECT name, category FROM actions WHERE category=:category AND lowcost=TRUE"
+            sql2 = text(sql)
+            results = db.session.execute(sql2, {"category": category})
+            for result in results:
+                newlist.append((result[0], result[1], "Edullinen"))
+    if "Kallis" in prices:
+        for category in categories:
+            sql = "SELECT name, category FROM actions WHERE category=:category AND highcost=TRUE"
+            sql2 = text(sql)
+            results = db.session.execute(sql2, {"category": category})
+            for result in results:
+                newlist.append((result[0], result[1], "Kallis"))
+    print(newlist)
+    if valinta == "decide":
+        return render_template("activity_list.html",results=newlist)
+    if valinta == "random":
+        lenlist = len(newlist)
+        if lenlist > 1:
+            random_number = randint(0, lenlist-1)
+        else:
+            random_number = 0
+        result = newlist[random_number]
+        name = result[0]
+        sql = "SELECT category, free, lowcost, highcost FROM actions WHERE name = :name"
+        sql2 = text(sql)
+        result = db.session.execute(sql2, {"name": name}).fetchone()
+        if result[1] == True:
+            price = "Ilmainen"
+        elif result[2] == True:
+            price = "Edullinen"
+        else:
+            price = "Kallis"
+        return render_template("activity.html", name = name, category = result[0], price=price)
+        
+
+
+@app.route("/random")
+def randomize():
+    sql = "SELECT name, category, free, lowcost, highcost FROM actions"
+    sql2 = text(sql)
+    results = db.session.execute(sql2).fetchall()
+    newlist = []
+    for result in results:
+        if result[2] == True:
+            cost = "Ilmainen"
+        if result[3] == True:
+            cost = "Edullinen"
+        if result[4] == True:
+            cost = "Kallis"
+        newlist.append((result[0], result[1], cost))
+    lenlist = len(newlist)
+    if lenlist > 1:
+        random_number = randint(0,lenlist-1)
+    else:
+        random_number = 0
+    print(random_number)
+    print(newlist)
+    result = newlist[random_number]
+    name = result[0]
+    category = result[1]
+    price = result[2]
+    print(name)
+    print(category)
+    print(price)
+    return render_template("activity.html", name = name, category = category, price=price)
+
+
+@app.route("/activity/<name>")
+def chosen_activity(name):
+    sql = "SELECT category, free, lowcost, highcost FROM actions WHERE name = :name"
+    sql2 = text(sql)
+    result = db.session.execute(sql2, {"name": name}).fetchone()
+    category = result[0]
+    if result[1] == True:
+        price = "Ilmainen"
+    if result[2] == True:
+        price = "Edullinen"
+    if result[3] == True:
+        price = "Kallis"
+
+    return render_template("activity.html", name = name, category = category, price=price)
+
+
+@app.route("/effects/<name>", methods = ["GET", "POST"])
+def effects(name):
+    if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+        effect = request.form["effects"]
+        low = False
+        neutral = False
+        high = False
+        if effect == "1":
+            low = True
+        if effect == "2":
+            neutral = True
+        if effect == "3":
+            high = True
+        sql = "INSERT INTO effects (action_name, low, neutral, high) VALUES (:action_name, :low, :neutral, :high)"
+        sql2 = text(sql)
+        db.session.execute(sql2, {"action_name":name, "low":low, "neutral":neutral, "high":high})
+        db.session.commit()
+        return redirect("/effect")
+    if request.method == "GET":
+        return render_template("effect.html")
+
+@app.route("/effect")
+def effect():
+    return render_template("effect.html")
+
+@app.route("/all_effects", methods=["GET","POST"])
+def all_effects():
+    if request.method == "GET":
+        results = show_reviews()
+        return render_template("all_effects.html", results = results)
+    if request.method == "POST":
+        categories = request.form.getlist("category")
+        prices = request.form.getlist("price")
+        criteria = request.form["criteria"]
+        results = filter_reviews(categories, prices, criteria)
+        return render_template("all_effects.html", results = results)
+    

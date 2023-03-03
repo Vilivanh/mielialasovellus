@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h4>Mielialasi</h4>
+<form action="moodlists" method="GET">
+{% for result in results %}
+	Mielialan arvo: {{ result[0] }}
+Lähetetty: {{result[1]}}
+<p></p>
+{% endfor %}
+
+</form>
+{% endblock %}
+~
+~                  

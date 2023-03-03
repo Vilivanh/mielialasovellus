@@ -4,6 +4,7 @@
 <form action="/moods" method="POST">
 	Anna arviosi tämänhetkisestä mielialastasi:
 	<p>
+	<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 	<input type="radio" name="mood" value="1"> 1
 	<input type="radio" name="mood" value="2"> 2
 	<input type="radio" name="mood" value="3"> 3

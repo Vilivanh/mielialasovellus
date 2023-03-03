@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Vaikutukset</h2>
+<hr>
+Suodata tuloksia
+<form action="/all_effects" method="POST">
+</a>
+Hinta
+<input type="checkbox" name="price" value="Ilmainen"> Ilmainen
+<input type="checkbox" name="price" value="Edullinen"> Edullinen
+<input type="checkbox" name="price" value="Kallis"> Kallis
+<p>
+Kategoria
+
+<input type="checkbox" name="category" value="Nautinto"> Nautinto
+<input type="checkbox" name="category" value="Viihde"> Viihde
+<input type="checkbox" name="category" value="Liikunta"> Liikunta
+<input type="checkbox" name="category" value="Muu"> Muu
+<p>
+Kriteeri
+<input type="radio" name="criteria" value="1">Näytä kaikki
+<input type="radio" name="criteria" value="2">Ei mielialaa laskevia
+<input type="radio" name="criteria" value="3">Useammin mielialaa kohottanut kuin laskenut
+<input type="radio" name="criteria" value="4">Yli 50% vaikutuksista kohottavia
+<p>
+<input type="submit" name="vahvistus" value="confirm">Suodata
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+</form>
+
+
+{% for result in results %}
+<h5>Aktiviteetti:<a href="/activity/{{ result[0] }}">{{ result[0] }}</h5></a>
+	<table>
+		<tr>
+			<th>Mielialaa kohottavat vaikutukset</th>
+			<th>Neutraalit vaikutukset</th>
+			<th>Mielialaa laskevat vaikutukset</th>
+		</tr>
+		<tr>
+			<td>{{result[3]}}</td>
+			<td>{{result[2]}}</td>
+			<td>{{result[1]}}</td>
+		</tr>
+	</table>
+Mielialaa kohottava vaikutus: {{result[3] }} kertaa <br></br>
+Neutraali vaikutus: {{result[2] }} kertaa <br></br>
+Mielialaa laskeva vaikutus: {{result[1]}} kertaa
+{% endfor %}     
+<p></p>
+<a href="/">
+<input type="submit" value="Palaa etusivulle">
+</a>
+
+{% endblock %}

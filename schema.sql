@@ -11,7 +11,8 @@ CREATE TABLE actions (
 
 CREATE TABLE effects (
 	id SERIAL PRIMARY KEY,
-        action_name TEXT,	
+        action_name TEXT,
+	creator_id INT REFERENCES users(id),	
 	low BOOLEAN,
 	neutral BOOLEAN, 
 	high BOOLEAN,	
@@ -36,7 +37,7 @@ CREATE TABLE supervisors (
 	
 CREATE TABLE moods (
 	id SERIAL PRIMARY KEY,
-	mood INT,
-	user_id INT REFERENCES users,
+	feeling INT,
+	user_id INT,
 	sent_at TIMESTAMP
 );

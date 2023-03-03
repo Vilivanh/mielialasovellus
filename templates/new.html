@@ -1,25 +1,26 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<form action="/create" method="POST">
+<form action="/activity" method="POST">
 	Nimi: <br>
-	<textarea name="nimi" rows="1" cols="30"></textarea>
+	<textarea name="name" rows="1" cols="30"></textarea>
 	<p>
 	Valitse kategoria:
 	<p>
-	<input type="radio" name = "kategoria" value="Nautinto"> Nautinto
-	<input type="radio" name = "kategoria" value="Viihde"> Viihde
-	<input type="radio" name = "kategoria" value="Liikunta"> Liikunta
-	<input type="radio" name = "kategoria" value="Muu"> Muu
+	<input type="radio" name = "category" value="Nautinto"> Nautinto
+	<input type="radio" name = "category" value="Viihde"> Viihde
+	<input type="radio" name = "category" value="Liikunta"> Liikunta
+	<input type="radio" name = "category" value="Muu"> Muu
 	<p>
 	Valitse kustannus:
 	<p>
-	<input type="radio" name = "kustannus" value="Ilmainen"> Ilmainen
-	<input type="radio" name = "kustannus" value="Edullinen"> Edullinen
-	<input type="radio" name = "kustannus" value="Kallis"> Kallis
+	<input type="radio" name = "price" value="Ilmainen"> Ilmainen
+	<input type="radio" name = "price" value="Edullinen"> Edullinen
+	<input type="radio" name = "price" value="Kallis"> Kallis
 	<p>
 	<input type="submit" value="Lisää aktiviteetti">
-	
+	<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
 </form>
 
 {% endblock %}
