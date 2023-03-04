@@ -21,7 +21,7 @@ CREATE TABLE effects (
 
 CREATE TABLE private_actions (
 	id SERIAL PRIMARY KEY,
-        creator_id INT REFERENCES users,
+        creator_id INT REFERENCES users(id),
 	name TEXT,
 	category TEXT,
 	free BOOLEAN,

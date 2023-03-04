@@ -29,3 +29,60 @@ Funktiot
 - Aktiviteettien valinta hyvällä mallilla
 - Arvostelujen tekeminen aloitettu
 - Reitityksessä parannettavaa
+
+
+SOVELLUKSEN KÄYNNISTÄMINEN 
+
+Koska fly.io-käynnistäminen ei ole toiminut, pitää sovellus käynnistää paikallisesti. 
+
+Lataa repositorio omalle koneellesi. Luo sovellukseen kansio .env ja kopioi kansioon seuraavat tiedot: 
+
+```
+DATABASE_URL = postgresql://<käyttäjä>
+SECRET_KEY = <secret_key>
+```
+
+jossa <käyttäjä> sekä <secret_key> pitää korvata omalla käyttäjänimellä ja itse asettamallasi salaisella avaimella.
+
+Käynnistä sovellusta varten virtuaaliympäristö
+
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Lataa sovelluksen käynnistämiseen tarvittavat paketit (ei tarpeen, jos koneessa ovat jo vaadittavat tiedot)
+```
+pip install -r requirements.txt
+```
+Käynnistä tietokanta
+
+```
+start-pg.sh
+```
+siirry tulkkiin komennolla
+
+```
+psql
+```
+
+Luo tietokanta komennolla
+
+```
+CREATE DATABASE <database_name>
+```
+
+Valitse tietokannalle itse valitsemasi nimi ja aseta se kohtaan <database_name>
+Aseta sovelluksen tietokanta luomaasi tietokantaan komennolla
+
+```
+psql -d <database_name> < schema.sql
+```
+
+Tietokannan ollessa käynnissä käynnistä sovellus komennolla
+
+```
+flask run 
+```
+
+Avaa verkkoselain, itselläni sovellus löytyy osoitteesta http://127.0.0.1:5000

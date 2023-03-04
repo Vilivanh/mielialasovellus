@@ -85,7 +85,7 @@ def new():
         if price == "Kallis":
             highcost = True
 
-        sql = "INSERT INTO actions (name, category, free, lowcost, highcost) VALUES (:name, :category, :free, :lowcost, :highcost)"
+        sql = "INSERT INTO private_actions (name, category, free, lowcost, highcost) VALUES (:name, :category, :free, :lowcost, :highcost)"
         sql2 = text(sql)
         db.session.execute(sql2, {"name": name, "category": category, "free": free, "lowcost": lowcost, "highcost": highcost})
         db.session.commit()
@@ -106,6 +106,7 @@ def create():
 
 @app.route("/activity", methods=["GET","POST"])
 def activity():
+    user_id = session["user_id"]
     if request.method == "GET":
         return render_template("activity.html")
     if request.method == "POST":
@@ -123,16 +124,16 @@ def activity():
             lowcost = True
         if price == "Kallis":
             highcost = True
-        sql = "INSERT INTO actions (name, category, free, lowcost, highcost) VALUES (:name, :category, :free, :lowcost, :highcost)"
+        sql = "INSERT INTO private_actions (creator_id, name, category, free, lowcost, highcost) VALUES (:creator_id, :name, :category, :free, :lowcost, :highcost)"
         sql2 = text(sql)
-        db.session.execute(sql2, {"name": name, "category": category, "free": free, "lowcost": lowcost, "highcost": highcost})
+        db.session.execute(sql2, {"creator_id": user_id, "name": name, "category": category, "free": free, "lowcost": lowcost, "highcost": highcost})
         db.session.commit()
         return render_template("activity.html", name = name, category = category, price=price)
 
 @app.route("/logout")
 def logout():
     del session["username"]
-    
+    del session["user_id"]
     return redirect("/")
 
 @app.route("/decision", methods=["GET", "POST"])
@@ -144,14 +145,15 @@ def decision():
 
 @app.route("/choose", methods=["GET", "POST"])
 def choose():
+    user_id = session["user_id"]
     if request.method == "GET":
         return render_template("choose.html")
     if request.method == "POST":        
         valinta = request.form["valinta"]
         if valinta == "showall":
-            sql = "SELECT name, category FROM activities"
+            sql = "SELECT name, category, FROM actions UNION SELECT name, category FROM private_actions WHERE creator_id=user_id"
             sql2 = text(sql)
-            results = db.session.execute(sql2).fetchall()
+            results = db.session.execute(sql2, {"user_id": user_id}).fetchall()
             return render_template("showall.html", results=results)
         if valinta == "decide":
             prices = request.form.getlist("price")
@@ -160,23 +162,23 @@ def choose():
             if "Ilmainen" in prices:
                 
                 for category in categories:
-                    sql = "SELECT name, category FROM actions WHERE category=:category AND free=TRUE"
+                    sql = "SELECT name, category FROM actions WHERE category=:category AND free=TRUE UNION SELECT name, category FROM private_actions WHERE category=:category AND free=TRUE and creator_id=:user_id"
                     sql2 = text(sql)
-                    results = db.session.execute(sql2, {"category": category})
+                    results = db.session.execute(sql2, {"category": category, "user_id": user_id})
                     for result in results:
                         newlist.append(result[0], result[1], "Ilmainen")
             if "Edullinen" in prices:
                 for category in categories:
-                    sql = "SELECT name, category FROM actions WHERE category=:category AND lowcost=TRUE"
+                    sql = "SELECT name, category FROM actions WHERE category=:category AND lowcost=TRUE UNION SELECT name, category FROM private_actions WHERE category=:category AND lowcost=TRUE and creator_id=:user_id"
                     sql2 = text(sql)
-                    results = db.session.execute(sql2, {"category": category})
+                    results = db.session.execute(sql2, {"category": category, "user_id": user_id})
                     for result in results:
                         newlist.append(result[0], result[1], "Edullinen")
             if "Kallis" in prices:
                 for category in categories:
-                    sql = "SELECT name, category FROM actions WHERE category=:category AND highcost=TRUE"
+                    sql = "SELECT name, category FROM actions WHERE category=:category AND highcost=TRUE UNION SELECT name, category FROM private_actions WHERE category=:category AND highcost=TRUE and creator_id=:user_id"
                     sql2 = text(sql)
-                    results = db.session.execute(sql2, {"category":category})
+                    results = db.session.execute(sql2, {"category": category, "user_id": user_id})
                     for result in results:
                         newlist.append(result[0], result[1], "Kallis")
             return render_template("activity_list.html",results=newlist)
@@ -240,9 +242,10 @@ def show_moods():
 
 @app.route("/showall")
 def showall():
-    sql = "SELECT name, category, free, lowcost, highcost FROM actions"
+    user_id = session["user_id"]
+    sql = "SELECT name, category, free, lowcost, highcost FROM actions UNION SELECT name, category, free, lowcost, highcost FROM private_actions WHERE creator_id=:user_id"
     sql2 = text(sql)
-    results = db.session.execute(sql2).fetchall()
+    results = db.session.execute(sql2, {"user_id":user_id}).fetchall()
     newlist = []
     for result in results:
         if result[2] == True:
@@ -256,33 +259,36 @@ def showall():
 
 @app.route("/activity_list", methods=["POST"])
 def activity_list():
+    user_id = session["user_id"]
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
     valinta = request.form["valinta"]
     prices = request.form.getlist("price")
     print(prices)
     categories = request.form.getlist("category")
+    if len(prices)==0 or len(categories)==0:
+        return render_template("error.html", message="sinä höpsöliini et valinnut tarvittavaa määrää kriteerejä")
     print(categories)
     newlist = []
     if "Ilmainen" in prices:
         for category in categories:
-            sql = "SELECT name, category FROM actions WHERE category=:category AND free=TRUE"
+            sql = "SELECT name, category FROM actions WHERE category=:category AND free=TRUE UNION SELECT name, category FROM private_actions WHERE category=:category AND free=TRUE AND creator_id=:user_id"
             sql2 = text(sql)
-            results = db.session.execute(sql2, {"category": category})
+            results = db.session.execute(sql2, {"category": category, "user_id": user_id})
             for result in results:
                 newlist.append((result[0], result[1], "Ilmainen"))
     if "Edullinen" in prices:
         for category in categories:
-            sql = "SELECT name, category FROM actions WHERE category=:category AND lowcost=TRUE"
+            sql = "SELECT name, category FROM actions WHERE category=:category AND lowcost=TRUE UNION SELECT name, category FROM private_actions WHERE category=:category AND lowcost=TRUE AND creator_id=:user_id"
             sql2 = text(sql)
-            results = db.session.execute(sql2, {"category": category})
+            results = db.session.execute(sql2, {"category": category, "user_id": user_id})
             for result in results:
                 newlist.append((result[0], result[1], "Edullinen"))
     if "Kallis" in prices:
         for category in categories:
-            sql = "SELECT name, category FROM actions WHERE category=:category AND highcost=TRUE"
+            sql = "SELECT name, category FROM actions WHERE category=:category AND highcost=TRUE UNION SELECT name, category FROM private_actions WHERE category=:category AND highcost=TRUE AND creator_id=:user_id"
             sql2 = text(sql)
-            results = db.session.execute(sql2, {"category": category})
+            results = db.session.execute(sql2, {"category": category, "user_id": user_id})
             for result in results:
                 newlist.append((result[0], result[1], "Kallis"))
     print(newlist)
@@ -296,7 +302,7 @@ def activity_list():
             random_number = 0
         result = newlist[random_number]
         name = result[0]
-        sql = "SELECT category, free, lowcost, highcost FROM actions WHERE name = :name"
+        sql = "SELECT category, free, lowcost, highcost FROM actions WHERE name = :name UNION SELECT category, free, lowcost, highcost FROM private_actions WHERE name = :name"
         sql2 = text(sql)
         result = db.session.execute(sql2, {"name": name}).fetchone()
         if result[1] == True:
@@ -342,9 +348,10 @@ def randomize():
 
 @app.route("/activity/<name>")
 def chosen_activity(name):
-    sql = "SELECT category, free, lowcost, highcost FROM actions WHERE name = :name"
+    user_id = session["user_id"]
+    sql = "SELECT category, free, lowcost, highcost FROM actions WHERE name = :name UNION SELECT category, free, lowcost, highcost FROM private_actions WHERE name = :name AND creator_id = :user_id"
     sql2 = text(sql)
-    result = db.session.execute(sql2, {"name": name}).fetchone()
+    result = db.session.execute(sql2, {"name": name, "user_id": user_id}).fetchone()
     category = result[0]
     if result[1] == True:
         price = "Ilmainen"
@@ -385,13 +392,15 @@ def effect():
 
 @app.route("/all_effects", methods=["GET","POST"])
 def all_effects():
+    user_id = session["user_id"]
     if request.method == "GET":
-        results = show_reviews()
+        results = show_reviews(user_id)
         return render_template("all_effects.html", results = results)
     if request.method == "POST":
+        user_id = session["user_id"]
         categories = request.form.getlist("category")
         prices = request.form.getlist("price")
         criteria = request.form["criteria"]
-        results = filter_reviews(categories, prices, criteria)
+        results = filter_reviews(categories, prices, criteria, user_id)
         return render_template("all_effects.html", results = results)
     

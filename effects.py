@@ -7,11 +7,12 @@ def add_review(name, low, neutral, high):
     db.session.execute(sql2, {"name":name, "low":low, "neutral":neutral, "high":high})
     db.session.commit()
 
-def show_reviews():
-    sql = "SELECT name FROM actions GROUP BY name"
+def show_reviews(userid):
+    user_id = userid
+    sql = "SELECT name FROM actions UNION SELECT name FROM private_actions WHERE creator_id=:user_id GROUP BY name"
     sql2 = text(sql)
     
-    results = db.session.execute(sql2).fetchall()
+    results = db.session.execute(sql2, {"user_id":user_id}).fetchall()
     reslist = []
     res2 = []
     for i in results:
@@ -65,53 +66,54 @@ def t_filter_reviews(categories, prices, criteria):
     print(results)
     return results
 
-def filter_reviews(categories, prices, criteria):
-    sql = "SELECT name FROM actions"
+def filter_reviews(categories, prices, criteria, userid):
+    user_id=userid
+    sql = "SELECT name FROM actions UNION SELECT name FROM private_actions WHERE creator_id=:user_id"
     sql2 = text(sql)
-    results = db.session.execute(sql2).fetchall()
+    results = db.session.execute(sql2, {"user_id":user_id}).fetchall()
     print(results)
     
     if len(categories)>0 or len(prices)>0:
         results=[]
         if len(prices) == 0:
             for category in categories:
-                sql = "SELECT name FROM actions WHERE category=:category"
+                sql = "SELECT name FROM actions WHERE category=:category UNION SELECT name FROM private_actions WHERE category=:category AND creator_id=:user_id"
                 sql2 = text(sql)
-                temp_results = db.session.execute(sql2, {"category":category}).fetchall()
+                temp_results = db.session.execute(sql2, {"category":category, "user_id":user_id}).fetchall()
                 results.append([result[0] for result in temp_results])
         elif len(categories) == 0:
             if "Ilmainen" in prices:
-                sql = "SELECT name FROM actions WHERE free=TRUE"
+                sql = "SELECT name FROM actions WHERE free=TRUE UNION SELECT name FROM private_actions WHERE free=TRUE AND creator_id=:user_id"
                 sql2 = text(sql)
-                temp_results = db.session.execute(sql2).fetchall()
+                temp_results = db.session.execute(sql2, {"user_id":user_id}).fetchall()
                 results.append([result[0] for result in temp_results])
             if "Edullinen" in prices:
-                sql = "SELECT name FROM actions WHERE lowcost=TRUE"
+                sql = "SELECT name FROM actions WHERE lowcost=TRUE UNION SELECT name FROM private_actions WHERE lowcost=TRUE AND creator_id=:user_id"
                 sql2 = text(sql)
-                temp_results = db.session.execute(sql2).fetchall()
+                temp_results = db.session.execute(sql2, {"user_id":user_id}).fetchall()
                 results.append([result[0] for result in temp_results])
             if "Kallis" in prices:
-                sql = "SELECT name FROM actions WHERE highcost=TRUE"
+                sql = "SELECT name FROM actions WHERE highcost=TRUE UNION SELECT name FROM private_actions WHERE highcost=TRUE AND creator_id=:user_id"
                 sql2 = text(sql)
-                temp_results = db.session.execute(sql2).fetchall()
+                temp_results = db.session.execute(sql2, {"user_id":user_id}).fetchall()
                 results.append([result[0] for result in temp_results])
         else:
              for category in categories:
                 for price in prices:
                     if price == "Ilmainen":
-                        sql = "SELECT name FROM actions WHERE category=:category AND free=TRUE"
+                        sql = "SELECT name FROM actions WHERE category=:category AND free=TRUE UNION SELECT name FROM private_actions WHERE category=:category AND free=TRUE AND creator_id=:user_id"
                         sql2 = text(sql)
-                        temp_results = db.session.execute(sql2, {"category":category}).fetchall()
+                        temp_results = db.session.execute(sql2, {"category":category, "user_id":user_id}).fetchall()
                         results.append([result[0] for result in temp_results])
                     if price == "Edullinen":
-                        sql = "SELECT name FROM actions WHERE category=:category AND lowcost=TRUE"
+                        sql = "SELECT name FROM actions WHERE category=:category AND lowcost=TRUE UNION SELECT name FROM private_actions WHERE category=:category AND lowcost=TRUE AND creator_id=:user_id"
                         sql2 = text(sql)
-                        temp_results = db.session.execute(sql2, {"category":category}).fetchall()
+                        temp_results = db.session.execute(sql2, {"category":category, "user_id":user_id}).fetchall()
                         results.append([result[0] for result in temp_results])
                     if price == "Kallis":
-                        sql = "SELECT name FROM actions WHERE category=:category AND highcost=TRUE"
+                        sql = "SELECT name FROM actions WHERE category=:category AND highcost=TRUE UNION SELECT name FROM private_actions WHERE category=:category AND highcost=TRUE AND creator_id=:user_id"
                         sql2 = text(sql)
-                        temp_results = db.session.execute(sql2, {"category":category}).fetchall()
+                        temp_results = db.session.execute(sql2, {"category":category, "user_id":user_id}).fetchall()
                         results.append([result[0] for result in temp_results])                        
     reslist = []
     res2 = []
