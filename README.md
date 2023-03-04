@@ -14,24 +14,21 @@ Sovelluksen ominaisuuksia:
 - Ylläpitäjä voi lisätä kaikille saatavilla olevia aktiviteetteja
 - Ylläpitäjä voi nähdä globaalien toimintojen vaikutuksista mielialaan
 
-Sovelluskehityksen tilanne
+## Sovelluskehityksen tilanne:
 
-Tietokantataulut
-- Luotu, poislukien oman mielialan taulu (mahdollista, että jää pois kokonaan)
-- Ongelmakohta: paikallisessa tuotannossa en ole päässyt testaamaan kirjautumista - herjaa että users-taulukkoa ei ole
+**TIETOKANTATAULUT**
+- Luotu
+- Vaikutusten kohdentaminen ko. käyttäjälle puuttuu
+- Kommentointi mielialoihin olisi kiva lisä
 
-HTML-sivut
-- Kirjautuminen, rekisteröityminen käytännössä valmiita. 
-- Muita ei ole testattu, johtuen tietokantatauluissa mainitusta ongelmakohdasta, mutta sivut pääsääntöisesti luotu
+**HTML-sivut**
+- Valmiita nykyisille ominaisuuksille
 
-Funktiot
-- Uuden aktiviteetin lisääminen, käyttäjän luominen ja kirjautuminen valmiita
-- Aktiviteettien valinta hyvällä mallilla
-- Arvostelujen tekeminen aloitettu
-- Reitityksessä parannettavaa
+**Funktiot**
+- Funktioita voisi siirtää enemmän omikseen, pois reitityksen alta
+- Supervisor-komennot puuttuvat
 
-
-SOVELLUKSEN KÄYNNISTÄMINEN 
+## SOVELLUKSEN KÄYNNISTÄMINEN 
 
 Koska fly.io-käynnistäminen ei ole toiminut, pitää sovellus käynnistää paikallisesti. 
 
