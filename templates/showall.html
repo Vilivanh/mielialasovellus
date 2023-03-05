@@ -11,5 +11,9 @@ Klikkaa aktiviteetin nimeä valitaksesi se
 	</ul>
 		
     {% endfor %}
+
+<p><a href="/">Palaa etusivulle</a><p>
+
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 {% endblock %}

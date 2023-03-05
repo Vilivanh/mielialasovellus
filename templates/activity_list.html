@@ -14,7 +14,6 @@ Klikkaa aktiviteetin nimeä valitaksesi se
 <a href="/new">
 <input type="submit" value="Luo uusi aktiviteetti">
 </a>
-
-</form>
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"></form>
 {% endblock %}
 ~                

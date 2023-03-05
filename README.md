@@ -35,7 +35,7 @@ Koska fly.io-käynnistäminen ei ole toiminut, pitää sovellus käynnistää pa
 Lataa repositorio omalle koneellesi. Luo sovellukseen kansio .env ja kopioi kansioon seuraavat tiedot: 
 
 ```
-DATABASE_URL = postgresql://<käyttäjä>
+DATABASE_URL = postgresql:///<käyttäjä>
 SECRET_KEY = <secret_key>
 ```
 
