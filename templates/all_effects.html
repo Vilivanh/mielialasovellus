@@ -23,7 +23,7 @@ Kriteeri
 <input type="radio" name="criteria" value="3">Useammin mielialaa kohottanut kuin laskenut
 <input type="radio" name="criteria" value="4">Yli 50% vaikutuksista kohottavia
 <p>
-<input type="submit" name="vahvistus" value="confirm">Suodata
+<input type="submit" name="vahvistus" value="Suodata">
 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
 </form>
@@ -32,20 +32,20 @@ Kriteeri
 {% for result in results %}
 <h5>Aktiviteetti:<a href="/activity/{{ result[0] }}">{{ result[0] }}</h5></a>
 	<table>
+		
 		<tr>
-			<th>Mielialaa kohottavat vaikutukset</th>
-			<th>Neutraalit vaikutukset</th>
-			<th>Mielialaa laskevat vaikutukset</th>
+			<th>Mielialaa kohottava vaikutus</th>
+			<th>{{result[3]}} kertaa</th>
 		</tr>
 		<tr>
-			<td>{{result[3]}}</td>
-			<td>{{result[2]}}</td>
-			<td>{{result[1]}}</td>
+			<th>Neutraali vaikutus mielialaan</th>
+			<th>{{result[2]}} kertaa</th>
 		</tr>
+		<tr>
+			<th>Mielialaa laskeva vaikutus</th>
+			<th>{{result[1]}} kertaa</th>
 	</table>
-Mielialaa kohottava vaikutus: {{result[3] }} kertaa <br></br>
-Neutraali vaikutus: {{result[2] }} kertaa <br></br>
-Mielialaa laskeva vaikutus: {{result[1]}} kertaa
+
 {% endfor %}     
 <p></p>
 <a href="/">
